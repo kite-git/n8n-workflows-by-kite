@@ -1,0 +1,250 @@
+{
+  "name": "Simple AI Email Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "custom",
+              "cronExpression": "* 0 0 ? * * *"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        16
+      ],
+      "id": "87670b63-f13c-4940-9b47-e9aacd2f3327",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bGy03ZnjKsyXvfSm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=YOU ARE A WORLD-CLASS **EMAIL RESPONSE DRAFTING AGENT**, TRAINED TO ASSIST PROFESSIONALS BY CREATING CLEAR, POLISHED, AND CONTEXT-AWARE DRAFT REPLIES TO EMAILS THEY RECEIVE. YOUR SOLE PURPOSE IS TO TRANSFORM INCOMING EMAIL CONTENT INTO HIGH-QUALITY DRAFT RESPONSES THAT THE USER CAN REVIEW, EDIT, AND SEND.\n\nYOU OPERATE AS A **SILENT DRAFTING ASSISTANT**: YOU DO NOT SEND EMAILS, YOU DO NOT ADD FACTS, AND YOU DO NOT CHANGE INTENT. YOU ONLY DRAFT.\n\nTHE DATE AND TIME TODAY IS: {{ $now }}\n\n---\n\n### CORE OBJECTIVE\n\n- READ AND UNDERSTAND THE RECEIVED EMAIL\n- IDENTIFY THE SENDER’S INTENT, TONE, AND REQUEST\n- GENERATE A **PROFESSIONAL, APPROPRIATE, AND CONTEXTUALLY ALIGNED DRAFT RESPONSE**\n- MATCH THE USER’S LIKELY ROLE (EMPLOYEE, MANAGER, FOUNDER, SUPPORT, ETC.) BASED ON CONTEXT\n- DEFAULT TO A **NEUTRAL–PROFESSIONAL TONE** UNLESS THE EMAIL CLEARLY REQUIRES ANOTHER STYLE\n\n---\n\n### OUTPUT REQUIREMENTS\n\n- PRODUCE **ONLY THE EMAIL BODY** (NO SUBJECT LINE UNLESS EXPLICITLY REQUESTED)\n- USE CLEAR PARAGRAPHS AND NATURAL BUSINESS LANGUAGE\n- BE CONCISE BUT COMPLETE\n- USE POLITE, PROFESSIONAL CLOSING STATEMENTS\n- NEVER INCLUDE ANALYSIS IN THE FINAL OUTPUT\n- PUT KITE BUERANO IN EVERY COMPLIMENTARY CLOSE OF THE RESPONSE\n- RESPOND IN HTML FORMAT.\n\n---\n\n### CHAIN OF THOUGHTS (REASONING PROCESS)\n\nFOLLOW THESE STEPS INTERNALLY BEFORE PRODUCING THE DRAFT:\n\n1. **UNDERSTAND**\n   - READ THE ENTIRE INCOMING EMAIL CAREFULLY\n   - IDENTIFY THE PRIMARY PURPOSE (QUESTION, REQUEST, COMPLAINT, UPDATE, FOLLOW-UP)\n\n2. **BASICS**\n   - DETERMINE REQUIRED RESPONSE TYPE:\n     - INFORMATIONAL\n     - CONFIRMATION\n     - AGREEMENT / DISAGREEMENT\n     - APOLOGY\n     - SCHEDULING\n     - ESCALATION\n     - DELAY / HOLD\n\n3. **BREAK DOWN**\n   - IDENTIFY EACH POINT THAT MUST BE ADDRESSED\n   - NOTE DEADLINES, ACTION ITEMS, OR DECISIONS\n\n4. **ANALYZE**\n   - ASSESS APPROPRIATE TONE (FORMAL, SEMI-FORMAL, FRIENDLY, FIRM)\n   - ASSESS POWER DYNAMICS (CLIENT, BOSS, PEER, SUBORDINATE)\n\n5. **BUILD**\n   - DRAFT A RESPONSE THAT:\n     - ACKNOWLEDGES THE EMAIL\n     - ADDRESSES ALL REQUIRED POINTS\n     - STATES NEXT STEPS CLEARLY\n\n6. **EDGE CASES**\n   - IF INFORMATION IS MISSING → USE NEUTRAL PLACEHOLDERS (E.G., “I WILL CONFIRM AND FOLLOW UP”)\n   - IF EMAIL IS HOSTILE → RESPOND CALMLY AND PROFESSIONALLY\n   - IF EMAIL IS VAGUE → PROVIDE A CLARIFYING BUT POLITE RESPONSE\n\n7. **FINAL ANSWER**\n   - OUTPUT A READY-TO-SEND DRAFT EMAIL BODY ONLY\n\n---\n\n### TONE ADAPTATION RULES\n\n- DEFAULT: PROFESSIONAL, POLITE, NEUTRAL\n- IF THE INCOMING EMAIL IS CASUAL → MATCH CASUALITY SLIGHTLY\n- IF THE EMAIL IS FORMAL → MAINTAIN FORMAL BUSINESS LANGUAGE\n- NEVER BE OVERLY EMOTIONAL OR PERSONAL\n\n---\n\n### FEW-SHOT EXAMPLES\n\n**INPUT EMAIL (SHORT REQUEST):**\n“Hi, can you confirm if the report will be ready by Friday?”\n\n**DESIRED OUTPUT:**\n“Hi [Name],  \nYes, the report is on track and will be ready by Friday. I’ll share it with you as soon as it’s finalized.  \nBest regards,  \n[Kite] (CHANGE HERE)”\n\n---\n\n**INPUT EMAIL (COMPLAINT):**\n“I’m disappointed that this hasn’t been resolved yet.”\n\n**DESIRED OUTPUT:**\n“Hi [Name],  \nThank you for bringing this to my attention. I understand your frustration and apologize for the delay. I’m currently looking into the issue and will update you shortly with next steps.  \nKind regards,  \n[Kite] (CHANGE HERE)”\n\n---\n\n### OPTIMIZATION STRATEGIES BY MODEL SIZE\n\n**SMALL MODELS (≤1B):**\n- USE SIMPLE SENTENCE STRUCTURES\n- FOLLOW ONE CLEAR RESPONSE GOAL\n- AVOID NUANCED LEGAL OR STRATEGIC LANGUAGE\n\n**LARGE MODELS (7B+):**\n- INCORPORATE SUBTLE TONE ADJUSTMENTS\n- HANDLE MULTI-PART EMAILS\n- MAINTAIN POLITICAL, LEGAL, OR DIPLOMATIC SENSITIVITY WHEN NEEDED\n\n---\n\n### WHAT NOT TO DO (NEGATIVE PROMPT)\n\n- NEVER INVENT FACTS, DATES, COMMITMENTS, OR DECISIONS\n- NEVER CHANGE THE USER’S IMPLIED INTENT\n- NEVER INCLUDE INTERNAL ANALYSIS, REASONING, OR NOTES\n- NEVER USE SARCASTIC, PASSIVE-AGGRESSIVE, OR EMOTIONAL LANGUAGE\n- NEVER ASK FOLLOW-UP QUESTIONS UNLESS ABSOLUTELY NECESSARY\n- NEVER WRITE SUBJECT LINES UNLESS EXPLICITLY REQUESTED\n- NEVER BE OVERLY VERBOSE OR OVERLY BRIEF\n- NEVER OUTPUT ANYTHING OTHER THAN THE DRAFT EMAIL BODY\n\n---\n\nYOU ARE NOT A CHATBOT.\nYOU ARE A PRECISION EMAIL DRAFTING AGENT.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        16
+      ],
+      "id": "41d23625-0a39-41bf-bf1b-a7d969b4f5bf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "mistralai/devstral-2512:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        224,
+        240
+      ],
+      "id": "509c5737-0516-47a3-8e1c-2764cb5d1c07",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1Rww0FKq8QAWzBr6",
+          "name": "OpenRouter account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.threadId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        240
+      ],
+      "id": "28a85f2f-c860-4d84-818c-2894e894f9a6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.threadId }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        16
+      ],
+      "id": "70bfede2-8b56-47d4-8ad5-ad119cc29669",
+      "name": "Reply to a message",
+      "webhookId": "bdc2db9d-e78d-4133-96e6-fec5e02fa669",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bGy03ZnjKsyXvfSm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "**Simple AI Email Responder**\n- Fetches every email that you receive every second using CRON expression and an AI Agent will generate a response for you.\n\n- If you want to use this, change the prompt in the System Message of the AI Agent to your name. [Here](https://drive.google.com/file/d/1zeXk9FkW31tKd0Iibk1phThDkivDuRz5/view?usp=sharing)\n## **MADE BY KITE**",
+        "height": 208,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        208
+      ],
+      "id": "a8e4c2a0-b37f-46e2-9678-c3bc449f6c9b",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "19b5e500ba1b25f5",
+          "threadId": "19b5e500ba1b25f5",
+          "labelIds": [
+            "UNREAD",
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 6117,
+          "headers": {
+            "delivered-to": "Delivered-To: kitegabrielproxd@gmail.com",
+            "received": "Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])\r\n        by mx.google.com with SMTPS id 4fb4d7f45d1cf-64b585ef6basor4493401a12.2.2025.12.26.21.37.42\r\n        for <kitegabrielproxd@gmail.com>\r\n        (Google Transport Security);\r\n        Fri, 26 Dec 2025 21:37:42 -0800 (PST)",
+            "x-received": "X-Received: by 2002:a05:6402:34c5:b0:649:6a2e:9bbb with SMTP id\r\n 4fb4d7f45d1cf-64b8e82b664mr23480329a12.2.1766813861756; Fri, 26 Dec 2025\r\n 21:37:41 -0800 (PST)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1766813862; cv=none;\r\n        d=google.com; s=arc-20240605;\r\n        b=Z7j3VJoLsrs/BrUWJ3IxxjQ4Y1rxqcZW70yFq5LEcAgJmkLXcywY2K4zzNK+gIL37z\r\n         +34AJwbSTgGw91tpM6qcNkBJzTuNypBjBUoox7h95bD+fmMcP4GP43TQJWOb/txehRZa\r\n         xLOPeNQwAbQxg2WipT2B5nj9rA8gKAkopc+V3Nuqv0cg7S8MY4Jc9APn53xqksQgSlef\r\n         WXRtW86ikjpB3SdY0P0MJbdXQIssFw67cDmYEJGIMnFC+xefa3Xzf8ZPXWXxHMqz7C91\r\n         rBeTWfpS26opQoefZ8EZs+kQ7QMwTH3ashuLioX6NMHQCz7zZT78pwFInf9K8GL5ipic\r\n         JELQ==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=Lqop7b/wUSYoUXzBI6jgnkbISqo6tLxcz5biG3lQey0=;\r\n        fh=tGc6Wcf7eVWB7klID4CkdFNU7lDZb0wpd/D0iKpDJOY=;\r\n        b=Y1bRthB07ktAwtmHjobBxlY9JhApcFdOR3hraGvEyBzqlDVcCj/RWkYTmIrrKJbYw5\r\n         sHu3n6LsVI0eUoIkwNhO1m49Asl+9CekLVDS9F4XE01QUrUkb35pTDR+tvfeEjJ4WLnj\r\n         Qrn5OGc+T79do6pSZiWNIKBsUHetetipeEGwnlN+ZJokQbRZMBhu2hRmn7ww1xrC1SQZ\r\n         fZFtgUtNnMae8AVsBChk7s9xuxpnOq3QDAyZx2Im4L056lfJLZG6XV0MOLx7i6YwvI30\r\n         8Gd017o4LC3ntPCHRtJ+34jmgvdws7cJFtM2iU5ypFyXcD/CzUghohxJULBhziZIp1Nh\r\n         o/wA==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=FgjqN8UC;\r\n       spf=pass (google.com: domain of kite.is.happy@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=kite.is.happy@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "return-path": "Return-Path: <kite.is.happy@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of kite.is.happy@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=FgjqN8UC;\r\n       spf=pass (google.com: domain of kite.is.happy@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=kite.is.happy@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20230601; t=1766813862; x=1767418662; dara=google.com;\r\n        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject\r\n         :date:message-id:reply-to;\r\n        bh=Lqop7b/wUSYoUXzBI6jgnkbISqo6tLxcz5biG3lQey0=;\r\n        b=FgjqN8UCRBy1tJnF7o9SUxgjRJYu0gQbM8HyB6SBk6t+r8Y2OlTbhqO8kE3R9BTuwh\r\n         0yQpnjhXrW6sq0ieuc+pnt687LXPkwK/t2x9hiC2Mh41ecAwmF+rARbT2KcuVFfGNTV6\r\n         abdyWi7/6SzpOd7X5WUwDBaTn0etmCbEu/HQJdeuGVZDh7oWjjFn2gDmT0WimuJ7MsTr\r\n         08HQ2aRtP5XA43wqw7z1WSt+QI0xW9g3V+w3AbSkT9ynslSoVpFbNwSmDiXY5sSaUVAb\r\n         ogV6MVIgp6MEjYXXEuVasx15JmFDuRWgkWXSV84gTLwG3DLZPCF4Qb5+iOp7sAdHpsdT\r\n         SlIw==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20230601; t=1766813862; x=1767418662;\r\n        h=to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;\r\n        bh=Lqop7b/wUSYoUXzBI6jgnkbISqo6tLxcz5biG3lQey0=;\r\n        b=nLxxebPM++rUOZrFOb5tDwbboVKPesKpvYWn9t7HSDg7uAiFu38o+QxM5Qq0mfmELw\r\n         4RNjHMa/7omaYEtADan7JHIxPp6sokpS4lIgtcUWBBqkZLKRAYxTyJrLtSVXSW1cuL61\r\n         tJPl0HXeby/rDloegX4qcjT1g4woCfTWIgJGfG4nLSkKqAhcE5myWkHxMEg0hiu01Quk\r\n         TN+vg0TZtojSAxDFuC0Wjg1qAcK8no9zw0FTJ9wGKDDcA3OS3/n3AsorxUDeLcf8M1La\r\n         vvXLgdg9iD4u2ou/1wu8ahz/BO70tsLJ3FPV8eET7kmJkYBAmX34jT6b4Qyo4RWe3E6q\r\n         dYEw==",
+            "x-gm-message-state": "X-Gm-Message-State: AOJu0Yxpw/gRPc00cZU4AKIx4ZshZ6sl2wIe92TA/NxbLU0LJMYHE5q1\r\n\tYgwXroVpiOI9XSRIBTOuoBA/DA5NoilBZu++fyQ3IID/6Uo3b35zjO679ZY9Bb4zZ0cIvvrs/sH\r\n\tyWOD+8ULii8K4dL6NKb1YDgFJnwsgGnM/DQ==",
+            "x-gm-gg": "X-Gm-Gg: AY/fxX705EX2+JHZk7/M/4ILi2RfEu0+J0ev6gfA16yog+1j5W/cB9Oz3lNN/vFxZGa\r\n\tJtG+MzDxx5Ip05jX5lITCnZDxHuOs8bZSts43rGTCyMsND+UsfuVsqtFf29r2UAmmp3BtIHlXNh\r\n\tj92OCVdFBHtjPbmsyKVUyc/tLCZTWfw8iwznutQTUbeyKqpVluZ33fF50f6a30dREhN9/9jcYP2\r\n\tHq73sFLncsuAp1/cetrFNRlx/3wlhWvA60B4BcThuW67r577ityZkCKM1Bm2HoUsA+DyAn7697W\r\n\tO2CIK6SIeyLCurS2NR0l0iiUZaPNKlb6+A==",
+            "x-google-smtp-source": "X-Google-Smtp-Source: AGHT+IFLd9JffosMyX/CSukxbEUIOxFzZiTeJkp6gnri7gAQ/EtpUQK3xwQIPGbuOkKYlra/x1fzbVOC9joChIucEkc=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Kite wah <kite.is.happy@gmail.com>",
+            "date": "Date: Sat, 27 Dec 2025 13:37:30 +0800",
+            "x-gm-features": "X-Gm-Features: AQt7F2pudw0Jul8xLuM46EQaSKFHghgmHRIldX0EWhcOqrTTqRR7lUuMchAc_k4",
+            "message-id": "Message-ID: <CAHhgWzhdzAY8BwUxLxK0fFb3c=s=JWRiXaKfr-zaU2woeQb+ow@mail.gmail.com>",
+            "subject": "Subject: Project Planning",
+            "to": "To: \"kitegabrielproxd@gmail.com\" <kitegabrielproxd@gmail.com>",
+            "content-type": "Content-Type: multipart/alternative; boundary=\"0000000000009d43b60646e86874\""
+          },
+          "html": "<div dir=\"ltr\">Hey there,<div><br></div><div>I would like to discuss the project we&#39;re going to make that is due on January 31, 2026. Let me know when you&#39;re available. Thanks!</div><div><br></div><div>Regards,</div><div>Kite</div></div>\n",
+          "text": "Hey there,\n\nI would like to discuss the project we're going to make that is due on\nJanuary 31, 2026. Let me know when you're available. Thanks!\n\nRegards,\nKite\n",
+          "textAsHtml": "<p>Hey there,</p><p>I would like to discuss the project we&apos;re going to make that is due on<br/>January 31, 2026. Let me know when you&apos;re available. Thanks!</p><p>Regards,<br/>Kite</p>",
+          "subject": "Project Planning",
+          "date": "2025-12-27T05:37:30.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "kitegabrielproxd@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:kitegabrielproxd@gmail.com\" class=\"mp_address_email\">kitegabrielproxd@gmail.com</a></span>",
+            "text": "kitegabrielproxd@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "kite.is.happy@gmail.com",
+                "name": "Kite wah"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Kite wah</span> &lt;<a href=\"mailto:kite.is.happy@gmail.com\" class=\"mp_address_email\">kite.is.happy@gmail.com</a>&gt;</span>",
+            "text": "\"Kite wah\" <kite.is.happy@gmail.com>"
+          },
+          "messageId": "<CAHhgWzhdzAY8BwUxLxK0fFb3c=s=JWRiXaKfr-zaU2woeQb+ow@mail.gmail.com>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90a8d1d1-5d9a-42bf-a9e1-530493007db0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6a8cf9382e656cb869c7dff98da1af12cb8fcc2c6df25f21c1cc086125159e1d"
+  },
+  "id": "vRYpNoJWgOCtG87g",
+  "tags": []
+}
